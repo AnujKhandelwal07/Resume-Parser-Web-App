@@ -1,0 +1,113 @@
+// This is your Prisma schema file
+// Learn more at https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Updated Enum for Shift Availability
+enum Shift {
+  MORNING
+  MID
+  NIGHT
+}
+
+// Updated User Model (Fixed Relations)
+model User {
+  id                   String   @id @default(uuid())
+  firstName            String
+  lastName             String
+  email                String   @unique
+  phoneNumber          String?
+  dateOfBirth          DateTime?
+  howSoonCanYouStart   DateTime
+  whatShiftsCanYouWork Shift[]
+
+  // One-to-One Relationships
+
+  address             Address?
+  emergencyContact    EmergencyContact?
+
+  // One-to-Many Relationships
+  specialties         Specialty[]
+  education           Education[]
+  workExperience      WorkExperience[]
+  resumes             Resume[]
+}
+
+// Address Model (Fixed)
+model Address {
+  id        String  @id @default(uuid())  
+  userId    String  @unique  // Ensures one address per user
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)  
+
+  street    String?
+  apt       String?
+  city      String?
+  state     String?
+  zipCode   String?
+  country   String?
+}
+
+// Emergency Contact Model (Fixed)
+model EmergencyContact {
+  id                      String  @id @default(uuid())  
+  userId                  String  @unique  // Ensures one emergency contact per user
+  user                    User    @relation(fields: [userId], references: [id], onDelete: Cascade)  
+
+  emergencyContactName    String?
+  emergencyContactPhone   String?
+  emergencyContactRel     String?
+}
+
+// Specialty Model
+model Specialty {
+  id                String  @id @default(uuid())
+  primaryWorkType   String
+  primarySpecialty  String
+  yearsOfExperience Int
+  secondarySpecialty String?
+  userId            String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Education Model
+model Education {
+  id             String  @id @default(uuid())
+  school         String
+  city           String
+  state          String
+  degree         String
+  graduationDate Int  
+  nameOnDegree   String
+  country        String
+  userId         String
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Work Experience Model
+model WorkExperience {
+  id            String  @id @default(uuid())
+  companyName  String
+  city          String?
+  profession    String?
+  specialty     String?
+  role String
+  shiftWorked   String?
+  userId        String
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Resume Model
+model Resume {
+  id       String  @id @default(uuid())
+  filename String
+  fileData Bytes?
+  userId   String
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

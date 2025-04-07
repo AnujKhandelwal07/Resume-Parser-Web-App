@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "WorkExperience" ALTER COLUMN "city" DROP NOT NULL,
+ALTER COLUMN "profession" DROP NOT NULL,
+ALTER COLUMN "specialty" DROP NOT NULL,
+ALTER COLUMN "shiftWorked" DROP NOT NULL;
